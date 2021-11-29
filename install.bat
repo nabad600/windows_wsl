@@ -1,12 +1,11 @@
 @ECHO OFF
 ECHO Please Wait.... WSL/WSL2 download
 # Package checking, Download and Install Multipass package
-blanko="";
-pkg=`wsl`
-if [ "$pkg" == "$blanko" ]; then
-    ECHO "Multipass not install in your system"
-    curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi --output %temp%/wsl_update_x64.msi
-    msiexec.exe /I "%temp%/wsl_update_x64.msi" /QB-!
-else
-    ECHO "Multipass already install in your system"
-fi
+@ECHO OFF
+ECHO Please Wait.... WSL/WSL2 download
+    DISM /online /enable-feature /featurename:HypervisorPlatform -All
+    DISM /online /enable-feature /featurename:VirtualMachinePlatform -All
+    DISM /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux -All
+    curl -L -C - https://github.com/nabad600/windows_wsl/releases/download/v1.0.0/deck-app.tar --output %temp%\deck-app.tar
+    wsl --import Deck-app %temp%\deck-app %temp%\deck-app.tar
+    
