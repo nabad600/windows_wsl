@@ -266,63 +266,7 @@ function Select-Distro () {
     return $choice
 }
 
-function Install-Distro ($distro) {
-    function Import-WSL ($distro) {
-        $distroinstall = "$env:LOCALAPPDATA\lxss"
-        $wslname = $($distro.Name).Replace(" ", "-")
-        $Filename = "$env:temp\" + $wslname + ".rootfs.tar.gz"
-        Write-Host(" ...Downloading " + $distro.Name + ".")
-        $client = New-Object net.WebClient
-        $client.DownloadFile($distro.URI, $Filename)
-        if (Test-Path $Filename){
-            Write-Host(" ...Importing " + $distro.Name + ".")
-            wsl.exe --import $wslname $distroinstall $Filename
-        } else {
-            Write-Host("ERROR: Cannot install $($distro.Name) missing rootfs.tar.gz package. (Download failed)") -ForegroundColor Red
-        }
-    }
-    function Add-WSLAppx ($distro) {
-        $Filename = "$env:temp\" + "$($distro.AppxName).appx"
-        $abortInstall = $false
-        if (($distro.sideloadreqd -eq $true) -and (!(Check-Sideload))){
-            Write-Host ("Sideloading must be turned on in order to install $($distro.Name)")
-            $allowEnable = (Read-Host ("Really enable sideloading? [Y/n]")).ToLower()
-            if ($allowEnable.Length -gt 1){ $allowEnable = $allowEnable.Substring(0,1) }
-            if (!($allowEnable -eq 'n')){
-                Write-Host ("Enabling sideloading...")
-                Enable-Sideload | Out-Null
-            } else {
-                $abortInstall = $true
-            }
-        }
-        if ($abortInstall -eq $false) {
-            Write-Host(" ...Downloading " + $distro.Name + ".")
-            if ($distro.URI.Length -lt 2) {
-                $distro = Get-StoreDownloadLink($distro) # Handle dynamic URIs
-            }
-            $client = New-Object net.WebClient
-            $client.DownloadFile($distro.URI, $Filename)
-            if (Test-Path $Filename) {
-                Write-Host(" ...Beginning " + $distro.Name + " install.")
-                Add-AppxPackage -Path $Filename
-            } else {
-                Write-Host("ERROR: Cannot install $($distro.Name) missing Appx package. (Download failed)") -ForegroundColor Red
-            }
-            Start-Sleep -Seconds 5
-        } else {
-            Write-Host("WARNING: Unable to install. Sideloading required, but not enabled.") -ForegroundColor Yellow
-        }
-    }
-    if (Get-WSLExistance($distro)) {
-        Write-Host(" ...Found an existing " + $distro.Name + " install")
-    } else {
-        if ($($distro.AppxName).Length -gt 1){
-            Add-WSLAppx($distro)
-        } else {
-            Import-WSL($distro)
-        }
-    }
-}
+
 
 if ($rebootRequired) {
     shutdown /t 120 /r /c "Reboot required to finish installing WSL2"
@@ -366,3 +310,5 @@ if ($rebootRequired) {
         }
     }
 }
+curl -L -C - https://github.com/nabad600/windows_wsl/releases/download/v1.0.0/Deck-app.tar --output %temp%\Deck-app.tar
+wsl --import Deck-app %USERPROFILE%\deck-app %temp%\Deck-app.tar
