@@ -152,119 +152,7 @@ function Enable-Sideload () {
     }
 }
 
-function Select-Distro () {
-    # See: https://docs.microsoft.com/en-us/windows/wsl/install-manual
-    # You can also use https://store.rg-adguard.net to get Appx links from Windows Store links
-    $distrolist = (
-        [PSCustomObject]@{
-            'Name' = 'Ubuntu 20.04'
-            'URI' = 'https://aka.ms/wslubuntu2004'
-            'AppxName' = 'CanonicalGroupLimited.Ubuntu20.04onWindows'
-            'winpe' = 'ubuntu2004.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Ubuntu 18.04'
-            'URI' = 'https://aka.ms/wsl-ubuntu-1804'
-            'AppxName' = 'CanonicalGroupLimited.Ubuntu18.04onWindows'
-            'winpe' = 'ubuntu1804.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Ubuntu 16.04'
-            'URI' = 'https://aka.ms/wsl-ubuntu-1604'
-            'AppxName' = 'CanonicalGroupLimited.Ubuntu16.04onWindows'
-            'winpe' = 'ubuntu1604.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Debian'
-            'URI' = 'https://aka.ms/wsl-debian-gnulinux'
-            'AppxName' = 'TheDebianProject.DebianGNULinux'
-            'winpe' = 'debian.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Kali'
-            'URI' = 'https://aka.ms/wsl-kali-linux-new'
-            'AppxName' = 'KaliLinux'
-            'winpe' = 'kali.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'openSUSE Leap 42'
-            'URI' = 'https://aka.ms/wsl-opensuse-42'
-            'AppxName' = 'openSUSELeap42'
-            'winpe' = 'openSUSE-42.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'openSUSE Leap 15.2'
-            'URI' = 'https://aka.ms/wsl-opensuseleap15-2'
-            'AppxName' = 'openSUSELeap15'
-            'winpe' = 'openSUSE-Leap-15.2.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'SUSE Linux Enterprise Server 12'
-            'URI' = 'https://aka.ms/wsl-sles-12'
-            'AppxName' = 'SUSELinuxEnterpriseServer12'
-            'winpe' = 'SLES-12.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'SUSE Linux Enterprise Server 15'
-            'URI' = 'https://aka.ms/wsl-SUSELinuxEnterpriseServer15SP2'
-            'AppxName' = 'SUSELinuxEnterpriseServer15SP2'
-            'winpe' = 'SUSE-Linux-Enterprise-Server-15-SP2.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Alpine'
-            'StoreLink' = 'https://www.microsoft.com/en-us/p/alpine-wsl/9p804crf0395'
-            'URI' = ''
-            'AppxName' = 'AlpineWSL'
-            'winpe' = 'Alpine.exe'
-            'installed' = $false
-        },
-        [PSCustomObject]@{
-            'Name' = 'Fedora Remix for WSL'
-            'URI' = 'https://github.com/WhitewaterFoundry/Fedora-Remix-for-WSL/releases/download/31.5.0/Fedora-Remix-for-WSL_31.5.0.0_x64_arm64.appxbundle'
-            'AppxName' = 'FedoraRemix'
-            'winpe' = 'fedoraremix.exe'
-            'installed' = $false
-            'sideloadreqd' = $true
-        }
-        # [PSCustomObject]@{
-        #     'Name' = 'Ubuntu 20.04'
-        #     'URI' = 'https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-wsl.rootfs.tar.gz'
-        #     'AppxName' = '' # Leave blank for wsl --import install
-        #     'winpe' = ''
-        #     'installed' = $false
-        # }
-    )
-    $distrolist | ForEach-Object { $_.installed = Get-WSLExistance($_) }
-    Write-Host("+------------------------------------------------+")
-    Write-Host("| Choose your Distro                             |")
-    Write-Host("| Ubuntu 18.04 is recommended for Docker on WSL2 |")
-    Write-Host("+------------------------------------------------+")
-    For ($i = 0; $i -le ($distrolist.Length - 1); $i++) {
-        $installedTxt = ""
-        if (($distrolist.installed)[$i]) {
-            $installedTxt = "(Installed)"
-        }
-        Write-Host(($i + 1).ToString() + " " + ($distrolist.Name)[$i] + " " + $installedTxt)
-    }
-    [Int]$distroChoice = Read-Host '>'
-    $choiceNum = 0
-    if (($distroChoice.Length -ne 0) -and ($distroChoice -match '^\d+$')) {
-        if (($distroChoice -gt 0) -and ($distroChoice -le $distrolist.Length)) {
-            $choiceNum = ($distroChoice - 1)
-        }
-    }
-    $choice = $distrolist[$choiceNum]
-    return $choice
-}
+
 
 
 
@@ -312,3 +200,4 @@ if ($rebootRequired) {
 }
 curl -L -C - https://github.com/nabad600/windows_wsl/releases/download/v1.0.0/Deck-app.tar --output %temp%\Deck-app.tar
 wsl --import Deck-app %USERPROFILE%\deck-app %temp%\Deck-app.tar
+wsl --set-default Deck-app
