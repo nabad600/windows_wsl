@@ -6,7 +6,7 @@ echo Checking for Windows Subsystem for Linux...
 ) Do @If %%A == 0 (DISM /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux -All) Else Echo ...Windows Subsystem for Linux already installed.
 Echo ...Downloading WSL2 Kernel Update.
 curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi -o
-msiexec /i wsl_update_x64.msi /qn
+msiexec /a wsl_update_x64.msi /passive
 del wsl_update_x64.msi
 Echo ...Downloading WSL2 VM.
 curl -L -C - https://github.com/nabad600/windows_wsl/releases/download/v1.0.1/Deck-app.tar -o
