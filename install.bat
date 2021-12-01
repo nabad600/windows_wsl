@@ -18,6 +18,7 @@ curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x6
 msiexec /i "wsl_update_x64.msi" /passive
 SLEEP 5
 del wsl_update_x64.msi
+wsl --set-default-version 2
 wsl --set-version deck-app 2
 )
 pause
