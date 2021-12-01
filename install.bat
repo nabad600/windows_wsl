@@ -1,7 +1,7 @@
 @echo off
 echo Checking for Windows Subsystem for Linux...
 @For /F %%A IN ('dism /online /get-featureinfo /featurename:VirtualMachinePlatform^|find "Enabled" /C'
-) Do @If %%A == 0 (DISM /online /enable-feature /featurename:VirtualMachinePlatform -All) Else Echo ...Virtual Machine Platform already installed.
+) Do @If %%A == 0 (DISM /online /NoRestart /enable-feature /featurename:VirtualMachinePlatform -All) Else Echo ...Virtual Machine Platform already installed.
 @For /F %%A IN ('dism /online /get-featureinfo /featurename:Microsoft-Windows-Subsystem-Linux^|find "Enabled" /C'
 ) Do @If %%A == 0 (DISM /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux -All) Else Echo ...Windows Subsystem for Linux already installed.
 Echo ...Downloading WSL2 Kernel Update.
