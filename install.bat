@@ -16,6 +16,8 @@ Echo ...Checking and Downloading WSL2 Kernel Update.
 ) Do @If %%A == 0 (Echo ... Your system already WSL2 install) Else (
 curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi --output wsl_update_x64.msi
 msiexec /i "wsl_update_x64.msi" /passive
+SLEEP 5
 del wsl_update_x64.msi
+wsl --set-version deck-app 2
 )
 pause
