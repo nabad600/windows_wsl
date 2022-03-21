@@ -1,14 +1,15 @@
 @Echo off
 set BuildNumber=1902
 set Linuxverstion=Linux
+set VAR=Windows Subsystem for Linux Update
+for /f "usebackq delims== tokens=2" %%x in (`wmic product where "Name= 'Windows Subsystem for Linux Update'" get Name /format:value`) do set VAR1=%%x
 for /f "usebackq delims== tokens=2" %%x in (`wmic os get BuildNumber /format:value`) do set CurrentBuildNumber=%%x
-Echo CurrentBuildNumber="%CurrentBuildNumber%"
+
 If %CurrentBuildNumber% GTR %BuildNumber% (
     set "params=%*"
     cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
-    Echo Are you Eligible
     Echo Checking for Windows Subsystem for Linux...
-    IF NOT EXIST "%system32%\wsl.exe" (
+    IF EXIST "%SystemRoot%\system32\wsl.exe" (
         Echo ...Windows Subsystem for Linux already installed.
     ) Else (
     @For /F %%A IN ('dism /online /get-featureinfo /featurename:VirtualMachinePlatform^|find "Enabled" /C'
@@ -20,12 +21,18 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
     @For /F %%A IN ('dism /online /get-featureinfo /featurename:Microsoft-Windows-Subsystem-Linux^|find "Enabled" /C'
     ) Do @If %%A == 0 (
         DISM /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux -All
+    ) Else (
+        Echo ...Windows Subsystem for Linux already installed.
     )
     msg %username% Please restart your system and install WSL
-    ) 
+    goto :break
+    )
     Echo ...Checking and Downloading WSL2 Kernel Update.
-    wl2="%wmic product where "Vendor like '%Microsoft%'" get Name | findstr /i "Windows Subsystem for Linux Update"%"
-    If %wl2% = "Windows Subsystem for Linux Update" (
+    SET VAR1=%VAR1: =%
+    SET VAR=%VAR: =%
+    If "%VAR1%"=="%VAR%" (
+       Echo .... Already installed
+    ) Else (
     If %CurrentBuildNumber% LEQ 18362 (
         Echo ... Your system not avalabile WSL2 install
     ) Else (
@@ -43,8 +50,6 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
             wsl --set-default-version 2
         )
     )
-    ) Else (
-        Echo .... Already installed
     )
     @For /F %%A IN ('wsl -d deck-app uname -a'
     ) Do @If %%A == Linux (
@@ -52,11 +57,13 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
     ) Else (
         Echo
         curl -L -C - https://github.com/nabad600/windows_wsl/releases/download/v1.0.1/Deck-app.tar --output Deck-app.tar
-        wsl --import deck-app %USERPROFILE% Deck-app.tar
+        wsl --import deck-app c:\deck-app Deck-app.tar
         wsl --set-version deck-app 2
         del Deck-app.tar
     )
 ) Else (
     Echo This PC doesn't meet the system requirements to upgrade your system minimum BuildNumber 1093
 )
+:break
+cmd /k
 pause
