@@ -4,12 +4,15 @@ cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) &&
 set BuildNumber=1902
 set Linuxverstion=Linux
 set VAR=Windows Subsystem for Linux Update
+@For /F %%A IN ('dism /online /get-featureinfo /featurename:VirtualMachinePlatform^|find "Disable" /C'
+) Do set VMP=%%A
 for /f "usebackq delims== tokens=2" %%x in (`wmic product where "Name= 'Windows Subsystem for Linux Update'" get Name /format:value`) do set VAR1=%%x
 for /f "usebackq delims== tokens=2" %%x in (`wmic os get BuildNumber /format:value`) do set CurrentBuildNumber=%%x
 for /f "usebackq delims== tokens=2" %%A in (`wmic service where "Name= 'LxssManager'" get Name /format:value`) do set SER=%%A
+if "%VMP%" == "0" if "%SER%" == "LxssManager" set res=true
 If %CurrentBuildNumber% GTR %BuildNumber% (
     Echo Checking for Windows Subsystem for Linux...
-    if "%SER%" == "LxssManager" (
+    if "%res%" == "true" (
         Echo ...Windows Subsystem for Linux already installed.
     ) Else (
     @For /F %%A IN ('dism /online /get-featureinfo /featurename:VirtualMachinePlatform^|find "Enabled" /C'
@@ -24,7 +27,7 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
     ) Else (
         Echo ...Windows Subsystem for Linux already installed.
     )
-    msg %username% Please restart your system and install WSL
+    msg %username% Please restart your system, installed and configure WSL feature
     goto :break
     )
     Echo ...Checking and Downloading WSL2 Kernel Update.
@@ -56,8 +59,8 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
         Echo Already there Distribution in your system.
     ) Else (
         Echo
-        curl -L -C - https://github.com/deck-app/wsl-installer/releases/download/v1.0.0/deck-app.tar --output Deck-app.tar
-        wsl --import deck-app c:\deck-app Deck-app.tar
+        curl -L -C - https://github.com/deck-app/wsl-installer/releases/download/v1.0.0/deck-app.tar --output deck-app.tar
+        wsl --import deck-app c:\deck-app deck-app.tar
         wsl --set-version deck-app 2
         del Deck-app.tar
     )
