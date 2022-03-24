@@ -1,15 +1,15 @@
 @Echo off
+set "params=%*"
+cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
 set BuildNumber=1902
 set Linuxverstion=Linux
 set VAR=Windows Subsystem for Linux Update
 for /f "usebackq delims== tokens=2" %%x in (`wmic product where "Name= 'Windows Subsystem for Linux Update'" get Name /format:value`) do set VAR1=%%x
 for /f "usebackq delims== tokens=2" %%x in (`wmic os get BuildNumber /format:value`) do set CurrentBuildNumber=%%x
-
+for /f "usebackq delims== tokens=2" %%A in (`wmic service where "Name= 'LxssManager'" get Name /format:value`) do set SER=%%A
 If %CurrentBuildNumber% GTR %BuildNumber% (
-    set "params=%*"
-    cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || (  echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
     Echo Checking for Windows Subsystem for Linux...
-    IF EXIST "%SystemRoot%\system32\wsl.exe" (
+    if "%SER%" == "LxssManager" (
         Echo ...Windows Subsystem for Linux already installed.
     ) Else (
     @For /F %%A IN ('dism /online /get-featureinfo /featurename:VirtualMachinePlatform^|find "Enabled" /C'
