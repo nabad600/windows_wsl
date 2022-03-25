@@ -61,7 +61,7 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
         curl -L -C - https://github.com/deck-app/wsl-installer/releases/download/v1.0.0/deck-app.tar --output deck-app.tar
         wsl --import deck-app c:\deck-app deck-app.tar
         wsl --set-version deck-app 2
-        del Deck-app.tar
+        del deck-app.tar
     )
 ) Else (
     Echo This PC doesn't meet the system requirements to upgrade your system minimum BuildNumber 1093
