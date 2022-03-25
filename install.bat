@@ -58,7 +58,6 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
     ) Do @If %%A == Linux (
         Echo Already there Distribution in your system.
     ) Else (
-        Echo
         curl -L -C - https://github.com/deck-app/wsl-installer/releases/download/v1.0.0/deck-app.tar --output deck-app.tar
         wsl --import deck-app c:\deck-app deck-app.tar
         wsl --set-version deck-app 2
