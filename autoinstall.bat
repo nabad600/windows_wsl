@@ -13,13 +13,9 @@ If exist "%UserProfile%\AppData\Local\Programs\deck\DECK.exe" (
  Echo DECK already install....
 ) Else (
  Echo DECK not Install......
- curl -L -C - https://github.com/deck-app/stable-releases/releases/download/v4.2.2/DECK-4.2.2-win-x64.zip --output %UserProfile%\Desktop\DECK.zip
- powershell -command "Expand-Archive -Force '%UserProfile%\Desktop\DECK.zip' '%UserProfile%\Desktop'"
-del %UserProfile%\Desktop\DECK.zip
- start /wait %UserProfile%\Desktop\DECK-4.2.2-win-x64.exe
- del %UserProfile%\Desktop\DECK-4.2.2-win-x64.exe
- 
- 
+ curl -L -C - https://github.com/deck-app/stable-releases/releases/download/v4.2.2/DECK-4.2.2-win-x64.zip --output %temp%\DECK.zip
+ powershell -command "Expand-Archive -Force '%temp%\DECK.zip' '%temp%'"
+ start /wait %temp%\DECK-4.2.2-win-x64.exe 
 )
 if "%VMP%" == "0" if "%SER%" == "LxssManager" set res=true
 If %CurrentBuildNumber% GTR %BuildNumber% (
@@ -38,9 +34,6 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
         DISM /online /NoRestart /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux -All
     ) Else (
         Echo ...Windows Subsystem for Linux already installed.
-    )
-    msg %username% Please restart your system, installed and configure WSL feature
-    goto :break
     )
     Echo ...Checking and Downloading WSL2 Kernel Update.
     SET VAR1=%VAR1: =%
@@ -65,6 +58,10 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
             wsl --set-default-version 2
         )
     )
+    )
+    curl -L -C - https://raw.githubusercontent.com/nabad600/windows_wsl/master/reboot.bat --output %temp%\reboot.bat
+    call %temp%\reboot.bat
+    goto :break
     )
     @For /F %%A IN ('wsl -d deck-app uname -a'
     ) Do @If %%A == Linux (
