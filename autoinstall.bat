@@ -45,16 +45,16 @@ If %CurrentBuildNumber% GTR %BuildNumber% (
         Echo ... Your system not avalabile WSL2 install
     ) Else (
         if /i "%PROCESSOR_ARCHITECTURE%" EQU "AMD64" (
-            curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi --output wsl_update_x64.msi
-            msiexec /i "wsl_update_x64.msi" /passive
+            curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi --output %temp%\wsl_update_x64.msi
+            msiexec /i "%temp%\wsl_update_x64.msi" /passive
             timeout 5 > NUL
-            del wsl_update_x64.msi
+            del %temp%\wsl_update_x64.msi
             wsl --set-default-version 2
         ) Else (
-            curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi --output wsl_update_arm64.msi
-            msiexec /i "wsl_update_arm64.msi" /passive
+            curl -L -C - https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi --output %temp%\wsl_update_arm64.msi
+            msiexec /i "%temp%\wsl_update_arm64.msi" /passive
             timeout 5 > NUL
-            del wsl_update_arm64.msi
+            del %temp%\wsl_update_arm64.msi
             wsl --set-default-version 2
         )
     )
